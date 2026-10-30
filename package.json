@@ -1,0 +1,15 @@
+{
+  "name": "aysh-ai-v2",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "python3 -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "test": "PYTHONPATH=. pytest backend/tests/"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

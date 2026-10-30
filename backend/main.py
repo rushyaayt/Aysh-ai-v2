@@ -1,32 +1,39 @@
 """
 FastAPI Main Application Web Server.
-Exposes REST API endpoints and serves modern web user interface.
+Exposes REST API endpoints for frontend connection.
 """
 import os
 from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from app.config import SANDBOX_DIR, UPLOADS_DIR, OUTPUTS_DIR, STATIC_DIR
-from app.sandbox import sandbox_manager
-from app.media_processor import media_processor
-from app.agent import agent_engine
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="Aysh AI v2 - Media Agent Sandbox", version="2.0.0")
+from backend.config import SANDBOX_DIR, UPLOADS_DIR, OUTPUTS_DIR
+from backend.sandbox import sandbox_manager
+from backend.media_processor import media_processor
+from backend.agent import agent_engine
 
-# Mount static files and output media files
-app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+app = FastAPI(title="Aysh AI v2 - Media Agent Sandbox Backend", version="2.0.0")
+
+# Enable CORS for local dev servers
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Mount static outputs and uploads for serving media files
 app.mount("/outputs", StaticFiles(directory=str(OUTPUTS_DIR)), name="outputs")
 app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 def index():
-    """Serves the main web application UI."""
-    index_file = STATIC_DIR / "index.html"
-    if index_file.exists():
-        return FileResponse(index_file)
-    return HTMLResponse("<h1>Aysh AI v2 Engine</h1>")
+    """Backend status endpoint."""
+    return {"status": "ok", "service": "Aysh AI v2 Backend API"}
 
 
 @app.post("/api/chat")

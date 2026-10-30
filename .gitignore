@@ -1,5 +1,13 @@
 __pycache__/
 *.pyc
 *.pyo
-server.log
+*.pyd
+.pytest_cache/
 sandbox_workspace/
+outputs/
+uploads/
+chunks/
+*.log
+node_modules/
+dist/
+.env
