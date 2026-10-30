@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aysh AI v2 - Creative Media Studio & Sandbox</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --accent-pink: #ec4899;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --text-light: #f8fafc;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            gap: 20px;
+            height: calc(100vh - 80px);
+            padding: 15px;
+        }
+
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        .panel-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .chat-bubble.bot {
+            background: #2d3748;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .chat-bubble.user {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            color: #fff;
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .media-preview-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #090d16;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .media-preview-area img, .media-preview-area video {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .file-drop-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .file-drop-zone:hover {
+            border-color: var(--accent-pink);
+            background: rgba(236, 72, 153, 0.05);
+        }
+
+        .badge-aura {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: white;
+            font-weight: 600;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            border: none;
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn-gradient:hover {
+            opacity: 0.9;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark px-4 border-bottom border-secondary border-opacity-25">
+        <span class="navbar-brand">
+            <i class="bi bi-stars me-2"></i>Aysh AI v2 <span class="badge badge-aura ms-2 fs-6">100% Free & Local</span>
+        </span>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-light text-opacity-75 small"><i class="bi bi-shield-check text-success me-1"></i> Sandbox Active</span>
+            <span class="text-light text-opacity-75 small"><i class="bi bi-cloud-arrow-up text-cyan me-1"></i> Supports Files > 2GB</span>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="app-container">
+
+        <!-- Left Panel: Files & Upload Manager -->
+        <div class="panel-card">
+            <div class="panel-header">
+                <span><i class="bi bi-folder2-open me-2 text-info"></i>Sandbox Workspace</span>
+                <span class="badge bg-secondary" id="fileCountBadge">0 files</span>
+            </div>
+
+            <div class="p-3">
+                <div class="file-drop-zone mb-3" onclick="document.getElementById('fileInput').click()">
+                    <i class="bi bi-cloud-upload fs-1 text-pink mb-2"></i>
+                    <p class="mb-1 fw-bold">Drag & Drop or Click to Upload</p>
+                    <p class="small text-secondary mb-0">Supports Videos & Photos (>2GB chunked streaming)</p>
+                    <input type="file" id="fileInput" class="d-none" onchange="handleFileUpload(this.files)">
+                </div>
+
+                <div id="uploadProgressBar" class="progress mb-3 d-none" style="height: 10px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-pink" role="progressbar" style="width: 0%"></div>
+                </div>
+
+                <h6 class="text-secondary small fw-bold text-uppercase mb-2">Files in Sandbox</h6>
+                <div id="fileListContainer" style="max-height: 250px; overflow-y: auto;">
+                    <div class="text-center text-secondary py-3 small">No files uploaded yet</div>
+                </div>
+            </div>
+
+            <div class="p-3 border-top border-secondary border-opacity-25 mt-auto">
+                <h6 class="text-secondary small fw-bold text-uppercase mb-2">Quick Actions</h6>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-sm btn-outline-light text-start" onclick="quickPrompt('Edit my uploaded photo with Aura edit style')">
+                        <i class="bi bi-magic me-2 text-pink"></i>Apply Photo Aura Edit
+                    </button>
+                    <button class="btn btn-sm btn-outline-light text-start" onclick="quickPrompt('Edit my uploaded video with Aura edit style')">
+                        <i class="bi bi-camera-reels me-2 text-purple"></i>Apply Video Aura Edit
+                    </button>
+                    <button class="btn btn-sm btn-outline-light text-start" onclick="quickPrompt('Generate video of glowing cosmic energy wave')">
+                        <i class="bi bi-play-circle me-2 text-cyan"></i>Generate AI Video
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Panel: Live Media Preview Studio -->
+        <div class="panel-card">
+            <div class="panel-header">
+                <span><i class="bi bi-play-btn me-2 text-purple"></i>Live Media Preview Studio</span>
+                <a id="downloadBtn" href="#" class="btn btn-sm btn-gradient d-none" download>
+                    <i class="bi bi-download me-1"></i> Download Output
+                </a>
+            </div>
+
+            <div class="media-preview-area" id="mediaPreviewContainer">
+                <div class="text-center text-secondary">
+                    <i class="bi bi-film fs-1 d-block mb-2 opacity-50"></i>
+                    <p class="mb-0">Select or generate media to preview output</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Friendly AI Conversational Agent Chat -->
+        <div class="panel-card">
+            <div class="panel-header">
+                <span><i class="bi bi-chat-dots me-2 text-pink"></i>Friendly AI Assistant</span>
+                <span class="badge badge-aura">Aura Mode</span>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-bubble bot">
+                    Hey there, creator! ✨ I'm your AI video & photo assistant! Upload any video or photo (even >2GB!), and tell me to edit it in <b>Aura Edit</b> style or run custom sandbox operations! What are we making today? 🚀
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <form id="chatForm" onsubmit="sendChatMessage(event)">
+                    <div class="input-group">
+                        <input type="text" id="chatInput" class="form-control bg-dark text-light border-secondary" placeholder="Ask AI to edit, generate, or execute code..." required>
+                        <button class="btn btn-gradient" type="submit">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let selectedFileContext = null;
+
+        async function fetchFileList() {
+            try {
+                const res = await fetch('/api/files');
+                const data = await res.json();
+                const container = document.getElementById('fileListContainer');
+                document.getElementById('fileCountBadge').innerText = `${data.files.length} files`;
+
+                if (data.files.length === 0) {
+                    container.innerHTML = '<div class="text-center text-secondary py-3 small">No files uploaded yet</div>';
+                    return;
+                }
+
+                container.innerHTML = data.files.map(f => `
+                    <div class="file-item">
+                        <div class="text-truncate me-2" title="${f.name}">
+                            <i class="bi ${f.category === 'outputs' ? 'bi-stars text-pink' : 'bi-file-earmark-media text-cyan'} me-1"></i>
+                            <strong>${f.name}</strong>
+                            <div class="small text-secondary">${f.size_mb} MB</div>
+                        </div>
+                        <button class="btn btn-xs btn-outline-info py-0 px-2" onclick="previewFile('${f.category}/${f.name}')">
+                            View
+                        </button>
+                    </div>
+                `).join('');
+
+                if (data.files.length > 0 && !selectedFileContext) {
+                    selectedFileContext = `/app/sandbox_workspace/${data.files[0].path}`;
+                }
+            } catch (err) {
+                console.error("Error fetching files:", err);
+            }
+        }
+
+        async function handleFileUpload(files) {
+            if (!files || files.length === 0) return;
+            const file = files[0];
+            const uploadId = 'upload_' + Math.random().toString(36).substring(2, 10);
+            const chunkSize = 10 * 1024 * 1024; // 10MB Chunks for smooth large file upload
+            const totalChunks = Math.ceil(file.size / chunkSize);
+
+            const progressBar = document.getElementById('uploadProgressBar');
+            const innerBar = progressBar.querySelector('.progress-bar');
+            progressBar.classList.remove('d-none');
+
+            for (let i = 0; i < totalChunks; i++) {
+                const start = i * chunkSize;
+                const end = Math.min(file.size, start + chunkSize);
+                const chunk = file.slice(start, end);
+
+                const formData = new FormData();
+                formData.append('file', chunk, file.name);
+                formData.append('upload_id', uploadId);
+                formData.append('chunk_index', i);
+                formData.append('total_chunks', totalChunks);
+                formData.append('filename', file.name);
+
+                await fetch('/api/upload_chunk', { method: 'POST', body: formData });
+                const pct = Math.round(((i + 1) / totalChunks) * 100);
+                innerBar.style.width = pct + '%';
+            }
+
+            progressBar.classList.add('d-none');
+            appendBotMessage(`✨ Upload complete for **${file.name}**! What style or edit would you like to apply?`);
+            fetchFileList();
+        }
+
+        function previewFile(relPath) {
+            const previewArea = document.getElementById('mediaPreviewContainer');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const isVideo = relPath.endsWith('.mp4') || relPath.endsWith('.webm') || relPath.endsWith('.mov');
+
+            if (isVideo) {
+                previewArea.innerHTML = `<video src="/${relPath}" controls autoplay loop></video>`;
+            } else {
+                previewArea.innerHTML = `<img src="/${relPath}" alt="Preview">`;
+            }
+
+            downloadBtn.href = `/${relPath}`;
+            downloadBtn.classList.remove('d-none');
+        }
+
+        function quickPrompt(text) {
+            document.getElementById('chatInput').value = text;
+            sendChatMessage(new Event('submit'));
+        }
+
+        function appendUserMessage(text) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-bubble user';
+            div.innerText = text;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendBotMessage(text, downloadUrl = null, mediaUrl = null) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-bubble bot';
+            div.innerHTML = text.replace(/\n/g, '<br>');
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+
+            if (mediaUrl) {
+                previewFile(mediaUrl.startsWith('/') ? mediaUrl.substring(1) : mediaUrl);
+            }
+        }
+
+        async function sendChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            appendUserMessage(msg);
+            input.value = '';
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: msg, file_context: selectedFileContext })
+                });
+                const data = await res.json();
+                appendBotMessage(data.response, data.download_url, data.output_file);
+                fetchFileList();
+            } catch (err) {
+                appendBotMessage("Oops! Encountered an issue connecting to AI engine.");
+            }
+        }
+
+        // Initialize on page load
+        fetchFileList();
+    </script>
+</body>
+</html>
