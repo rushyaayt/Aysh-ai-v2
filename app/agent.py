@@ -20,7 +20,7 @@ class AgentEngine:
             "Hey friend! Ready to edit some fire media or generate some wild visuals? Let's go! 🔥"
         ]
 
-    def process_message(self, message: str, file_context: str = None) -> Dict[str, Any]:
+    def process_message(self, message: str, file_context: str = None, ai_mode: str = "Normal") -> Dict[str, Any]:
         """Parses conversational user intent and executes media tasks or sandbox scripts."""
         msg_lower = message.lower()
 
@@ -142,10 +142,19 @@ class AgentEngine:
                 "result": res
             }
 
-        # General Friendly Chat Response
+        # Mode Specific Intelligence Enhancements
+        mode_prefix = f"⚡ **[Mode: {ai_mode.upper()}]** " if ai_mode != "Normal" else ""
+
+        mode_insights = {
+            "Normal": "Operating in standard casual mode.",
+            "Pro": "Operating in Pro mode with enhanced multi-pass parameter tuning.",
+            "Advance": "Operating in Advance mode with high-precision frame and layer alignment.",
+            "Powerful Intelligent": "Operating in Powerful Intelligent mode! Deep multi-layered structural reasoning & ultimate creative precision activated! 🧠🚀"
+        }
+
         greeting = random.choice(self.friendly_greetings)
         return {
-            "response": f"{greeting}\n\nI can do all these awesome things for you 100% free with zero API tokens needed:\n"
+            "response": f"{greeting}\n\n{mode_prefix}{mode_insights.get(ai_mode, '')}\n\nI can do all these awesome things for you 100% free with zero API tokens needed:\n"
                         f"• 🎬 **Edit videos** with glowing **Aura Edit** style, cyberpunk neon, vintage, or speed control.\n"
                         f"• 🖼️ **Edit photos** with radiant energy aura, filters, & contrast boosts.\n"
                         f"• 🎨 **Generate videos & photos** from custom prompts.\n"

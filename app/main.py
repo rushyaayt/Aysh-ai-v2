@@ -34,10 +34,11 @@ def chat(payload: dict):
     """Processes conversational AI messages."""
     message = payload.get("message", "")
     file_context = payload.get("file_context")
+    ai_mode = payload.get("ai_mode", "Normal")
     if not message:
         raise HTTPException(status_code=400, detail="Message cannot be empty.")
 
-    res = agent_engine.process_message(message=message, file_context=file_context)
+    res = agent_engine.process_message(message=message, file_context=file_context, ai_mode=ai_mode)
     return res
 
 

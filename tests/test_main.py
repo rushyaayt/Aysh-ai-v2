@@ -25,10 +25,11 @@ def test_list_files_endpoint():
 
 
 def test_chat_ai_interaction():
-    response = client.post("/api/chat", json={"message": "Hi, what can you do?"})
+    response = client.post("/api/chat", json={"message": "Hi, what can you do?", "ai_mode": "Powerful Intelligent"})
     assert response.status_code == 200
     data = response.json()
     assert "response" in data
+    assert "POWERFUL INTELLIGENT" in data["response"]
     assert "action" in data
 
 

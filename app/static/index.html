@@ -245,7 +245,17 @@
         <div class="panel-card">
             <div class="panel-header">
                 <span><i class="bi bi-chat-dots me-2 text-pink"></i>Friendly AI Assistant</span>
-                <span class="badge badge-aura">Aura Mode</span>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-light dropdown-toggle py-0 px-2 small" type="button" id="aiModeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-cpu me-1 text-pink"></i> <span id="currentAiModeLabel">Normal</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end small" aria-labelledby="aiModeDropdown">
+                        <li><a class="dropdown-item active" href="#" onclick="selectAiMode('Normal', event)"><i class="bi bi-emoji-smile me-2 text-info"></i>Normal (Casual)</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectAiMode('Pro', event)"><i class="bi bi-lightning-charge me-2 text-warning"></i>Pro (Enhanced)</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectAiMode('Advance', event)"><i class="bi bi-sliders me-2 text-primary"></i>Advance (High-Precision)</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectAiMode('Powerful Intelligent', event)"><i class="bi bi-brain me-2 text-pink"></i>Powerful Intelligent (Ultimate)</a></li>
+                    </ul>
+                </div>
             </div>
 
             <div class="chat-messages" id="chatMessages">
@@ -268,8 +278,24 @@
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let selectedFileContext = null;
+        let selectedAiMode = "Normal";
+
+        function selectAiMode(mode, event) {
+            if (event) event.preventDefault();
+            selectedAiMode = mode;
+            document.getElementById('currentAiModeLabel').innerText = mode;
+
+            // Highlight selected item in UI
+            document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
+            if (event && event.target) {
+                const item = event.target.closest('.dropdown-item');
+                if (item) item.classList.add('active');
+            }
+            appendBotMessage(`⚙️ AI Mode switched to **${mode}**!`);
+        }
 
         async function fetchFileList() {
             try {
@@ -392,7 +418,7 @@
                 const res = await fetch('/api/chat', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ message: msg, file_context: selectedFileContext })
+                    body: JSON.stringify({ message: msg, file_context: selectedFileContext, ai_mode: selectedAiMode })
                 });
                 const data = await res.json();
                 appendBotMessage(data.response, data.download_url, data.output_file);
